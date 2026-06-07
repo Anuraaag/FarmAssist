@@ -23,8 +23,10 @@ app.get('/health', (_req, res) => {
 
 app.use('/api/diagnose', diagnoseRouter);
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`FarmAssist backend running on http://localhost:${PORT}`);
 });
+
+server.setTimeout(120000);
 
 export default app;
