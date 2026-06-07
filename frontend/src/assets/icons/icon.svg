@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background circle -->
+  <rect width="512" height="512" rx="96" fill="#2d6a4f"/>
+
+  <!-- Leaf shape (stylised) -->
+  <path
+    d="M256 96
+       C256 96 160 160 160 280
+       C160 340 196 390 256 416
+       C316 390 352 340 352 280
+       C352 160 256 96 256 96Z"
+    fill="#d8f3dc"
+    opacity="0.95"
+  />
+  <!-- Stem -->
+  <line x1="256" y1="416" x2="256" y2="460"
+        stroke="#d8f3dc" stroke-width="18" stroke-linecap="round"/>
+  <!-- Central vein -->
+  <line x1="256" y1="150" x2="256" y2="400"
+        stroke="#2d6a4f" stroke-width="10" stroke-linecap="round" opacity="0.6"/>
+  <!-- Left veins -->
+  <line x1="256" y1="230" x2="200" y2="280"
+        stroke="#2d6a4f" stroke-width="7" stroke-linecap="round" opacity="0.5"/>
+  <line x1="256" y1="290" x2="195" y2="330"
+        stroke="#2d6a4f" stroke-width="7" stroke-linecap="round" opacity="0.5"/>
+  <!-- Right veins -->
+  <line x1="256" y1="230" x2="312" y2="280"
+        stroke="#2d6a4f" stroke-width="7" stroke-linecap="round" opacity="0.5"/>
+  <line x1="256" y1="290" x2="317" y2="330"
+        stroke="#2d6a4f" stroke-width="7" stroke-linecap="round" opacity="0.5"/>
+</svg>
