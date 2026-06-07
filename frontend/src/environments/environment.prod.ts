@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://your-backend.railway.app'
+  apiUrl: 'https://farmassist-production-aa1e.up.railway.app'
 };
