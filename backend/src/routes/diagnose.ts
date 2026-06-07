@@ -1,6 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import multer from 'multer';
 import Groq from 'groq-sdk';
+import sharp from 'sharp';
 
 const router = Router();
 
@@ -56,8 +57,15 @@ async function diagnoseHandler(req: Request, res: Response): Promise<void> {
   }
 
   const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-  const base64Image = req.file.buffer.toString('base64');
-  const mimeType = req.file.mimetype;
+
+  // Resize to max 1024px to reduce payload and speed up inference
+  const resized = await sharp(req.file.buffer)
+    .resize(1024, 1024, { fit: 'inside', withoutEnlargement: true })
+    .jpeg({ quality: 85 })
+    .toBuffer();
+
+  const base64Image = resized.toString('base64');
+  const mimeType = 'image/jpeg';
 
   try {
     const response = await groq.chat.completions.create({
