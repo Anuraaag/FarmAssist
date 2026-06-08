@@ -16,7 +16,15 @@ const upload = multer({
   },
 });
 
-const PROMPT = `You are an expert agronomist specializing in crop disease diagnosis for Indian farmers. Analyze the uploaded crop leaf image and respond ONLY with a valid JSON object. No markdown, no explanation, just raw JSON.
+const PROMPT = `You are an expert agronomist specializing in crop disease diagnosis for Indian farmers. Analyze the uploaded crop leaf image carefully.
+
+IMPORTANT RULES:
+- If the leaf looks healthy, green, and shows no clear signs of disease, spots, lesions, discoloration, or damage — return "Healthy". Do NOT invent diseases.
+- Only diagnose a disease if you can clearly see visible symptoms such as spots, lesions, yellowing, wilting, blight, mold, or other abnormalities.
+- If the image is blurry, too dark, or you are uncertain, set confidence to "Low" and err on the side of "Healthy".
+- Be conservative — a false healthy reading is safer than a false disease diagnosis.
+
+Respond ONLY with a valid JSON object. No markdown, no explanation, just raw JSON.
 
 {
   "disease_name": "string — common name of the disease, or 'Healthy' if no disease detected",
@@ -60,9 +68,11 @@ async function diagnoseHandler(req: Request, res: Response): Promise<void> {
   const mimeType = req.file.mimetype;
 
   try {
-    const response = await groq.chat.completions.create({
+    // Stream the response so Railway's gateway doesn't timeout waiting for first byte
+    const stream = await groq.chat.completions.create({
       model: 'meta-llama/llama-4-scout-17b-16e-instruct',
       max_tokens: 1024,
+      stream: true,
       messages: [
         {
           role: 'user',
@@ -80,8 +90,12 @@ async function diagnoseHandler(req: Request, res: Response): Promise<void> {
       ],
     });
 
-    const rawText = (response.choices[0].message.content ?? '').trim();
-    const jsonText = rawText.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
+    let rawText = '';
+    for await (const chunk of stream) {
+      rawText += chunk.choices[0]?.delta?.content ?? '';
+    }
+
+    const jsonText = rawText.trim().replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
 
     try {
       const diagnosis = JSON.parse(jsonText);
